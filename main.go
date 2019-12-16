@@ -54,7 +54,7 @@ func main() {
 		panic(err)
 	}
 
-	db.AutoMigrate(&models.Match{})
+	db.AutoMigrate(&models.Match{}, &models.User{})
 
 	r := gin.Default()
 
@@ -65,9 +65,7 @@ func main() {
 	})
 
 	controller := controllers.Controller{
-		Service: services.Service{
-			Db: db,
-		},
+		Service: services.NewService(db),
 	}
 
 	r.POST("/metegol/users", controller.AddUsers)

@@ -8,13 +8,31 @@ import (
 	"github.com/metegol-project/models"
 	"github.com/metegol-project/views"
 	gormbulk "github.com/t-tiger/gorm-bulk-insert"
+	"strings"
 )
 
 type Service struct {
-	Db      *gorm.DB
+	db      *gorm.DB
 	users   []string
 	teams   models.Teams
 	matches models.Matches
+}
+
+func NewService(db *gorm.DB) *Service {
+	var users []models.User
+	if err := db.Find(&users).Error; err != nil {
+		panic(err)
+	}
+
+	var aux []string
+	for _, u := range users {
+		aux = append(aux, u.Name)
+	}
+
+	return &Service{
+		db:    db,
+		users: aux,
+	}
 }
 
 func (s *Service) AddUsers(req views.AddUsersRequest) gin.H {
@@ -22,9 +40,23 @@ func (s *Service) AddUsers(req views.AddUsersRequest) gin.H {
 		panic(err)
 	}
 
-	s.users = append(s.users, req.Users...)
+	s.users = req.Users
 	s.teams = models.GenerateTeams(s.users)
 	s.matches = models.GenerateMatches(s.teams, 2)
+
+	var users []interface{}
+	for _, u := range req.Users {
+		user := models.User{
+			Name:       u,
+			Tournament: strings.ReplaceAll(req.Tournament, " ", ""),
+		}
+
+		users = append(users, user)
+	}
+
+	if err := gormbulk.BulkInsert(s.db, users, 2000); err != nil {
+		panic(err)
+	}
 
 	var matches []interface{}
 	for _, m := range s.matches.Data {
@@ -38,25 +70,31 @@ func (s *Service) AddUsers(req views.AddUsersRequest) gin.H {
 		matches = append(matches, match)
 	}
 
-	if err := gormbulk.BulkInsert(s.Db, matches, 2000); err != nil {
+	if err := gormbulk.BulkInsert(s.db, matches, 2000); err != nil {
 		panic(err)
 	}
 
 	return gin.H{
 		"message": "users added",
-		"users":   s.users,
+		"users":   users,
 	}
 }
 
 func (s *Service) GetUsers() gin.H {
+	var users []models.User
+
+	if err := s.db.Find(&users).Error; err != nil {
+		panic(err)
+	}
+
 	return gin.H{
-		"users": s.users,
+		"users": users,
 	}
 }
 
 func (s *Service) GetMatches() gin.H {
 	var matches []models.Match
-	if err := s.Db.Find(&matches).Error; err != nil {
+	if err := s.db.Find(&matches).Error; err != nil {
 		panic(err)
 	}
 
@@ -68,15 +106,14 @@ func (s *Service) GetMatches() gin.H {
 func (s *Service) PlayMatch(req views.PlayMatchRequest) gin.H {
 	var match models.Match
 
-	if err := s.Db.First(&match, req.MatchID).Error; err != nil {
+	if err := s.db.First(&match, req.MatchID).Error; err != nil {
 		panic(err)
 	}
 
 	match.ScoreLocal = req.ScoreLocal
 	match.ScoreVisitor = req.ScoreVisitor
-	match.Played = true
 
-	if err := s.Db.Save(&match).Error; err != nil {
+	if err := s.db.Save(&match).Error; err != nil {
 		panic(err)
 	}
 
@@ -93,7 +130,7 @@ func (s *Service) GetScores() gin.H {
 
 	var matches []models.Match
 
-	if err := s.Db.Find(&matches).Error; err != nil {
+	if err := s.db.Find(&matches).Error; err != nil {
 		panic(err)
 	}
 

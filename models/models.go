@@ -10,5 +10,9 @@ type Match struct {
 	VisitorB     string
 	ScoreLocal   int
 	ScoreVisitor int
-	Played       bool
+}
+
+type User struct {
+	Name       string
+	Tournament string
 }

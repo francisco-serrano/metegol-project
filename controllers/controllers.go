@@ -8,7 +8,7 @@ import (
 )
 
 type Controller struct {
-	Service services.Service
+	Service *services.Service
 }
 
 func (c *Controller) AddUsers(ctx *gin.Context) {

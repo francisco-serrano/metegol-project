@@ -1,7 +1,8 @@
 package views
 
 type AddUsersRequest struct {
-	Users []string `json:"users"`
+	Users      []string `json:"users"`
+	Tournament string   `json:"tournament"`
 }
 
 type PlayMatchRequest struct {
