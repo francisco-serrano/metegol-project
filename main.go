@@ -51,6 +51,14 @@ func main() {
 		})
 	})
 
+	controller := Controller{
+		Service{},
+	}
+
+	r.POST("/metegol/users", controller.AddUsers)
+	r.GET("/metegol/users", controller.GetUsers)
+	r.GET("/metegol/matches", controller.GetMatches)
+
 	if err := r.Run(); err != nil {
 		panic(err)
 	}
@@ -63,5 +71,5 @@ func main() {
 	//fmt.Println("number of teams", numberTeams)
 	//fmt.Println("number of matches", numberMatches)
 
-	Run()
+	//Run()
 }
