@@ -1,4 +1,4 @@
-package main
+package models
 
 import "fmt"
 
@@ -29,17 +29,17 @@ func GenerateMatches(teams Teams, repetitions int) Matches {
 	return matches
 }
 
-type Match struct {
+type CoreMatch struct {
 	Local   Team
 	Visitor Team
 }
 
 type Matches struct {
-	Data []Match
+	Data []CoreMatch
 }
 
 func NewMatches() Matches {
-	var aux []Match
+	var aux []CoreMatch
 	return Matches{Data: aux}
 }
 
@@ -53,7 +53,7 @@ func (m *Matches) Contains(local, visitor Team) bool {
 }
 
 func (m *Matches) Add(local, visitor Team) {
-	m.Data = append(m.Data, Match{
+	m.Data = append(m.Data, CoreMatch{
 		Local:   local,
 		Visitor: visitor,
 	})
@@ -65,7 +65,7 @@ func (m *Matches) Length() int {
 
 func (m *Matches) Expand(n int) {
 
-	aux := make([]Match, len(m.Data))
+	aux := make([]CoreMatch, len(m.Data))
 
 	copy(aux, m.Data)
 
@@ -98,7 +98,7 @@ func (m *Teams) Contains(userA, userB string) bool {
 }
 
 func (m *Teams) Add(userA, userB string) {
-	m.Data = append(m.Data, Team{UserA: userA, UserB: userB,})
+	m.Data = append(m.Data, Team{UserA: userA, UserB: userB})
 }
 
 func (m *Teams) Length() int {

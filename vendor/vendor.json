@@ -43,6 +43,18 @@
 			"revisionTime": "2019-10-22T19:55:53Z"
 		},
 		{
+			"checksumSHA1": "Y4uZW25x4oXpNZ/6OseVmCyEQz8=",
+			"path": "github.com/jinzhu/gorm",
+			"revision": "79a77d771dee4e4b60e9c543e8663bbc80466670",
+			"revisionTime": "2019-12-06T14:22:28Z"
+		},
+		{
+			"checksumSHA1": "Hf2EdZUOQfrn+iW34gg2/0GHo94=",
+			"path": "github.com/jinzhu/inflection",
+			"revision": "f5c5f50e6090ae76a29240b61ae2a90dd810112e",
+			"revisionTime": "2019-06-03T04:28:36Z"
+		},
+		{
 			"checksumSHA1": "V37n70ZDzwNvSMjP0i1LmYX6LV8=",
 			"path": "github.com/json-iterator/go",
 			"revision": "44a7e7340d23d2e5d5d942966eb683436c027da0",
@@ -65,6 +77,12 @@
 			"path": "github.com/modern-go/reflect2",
 			"revision": "94122c33edd36123c84d5368cfb2b69df93a0ec8",
 			"revisionTime": "2018-07-18T01:23:57Z"
+		},
+		{
+			"checksumSHA1": "IrQRTIA+KTW1CC9oho2sEOtayZU=",
+			"path": "github.com/t-tiger/gorm-bulk-insert",
+			"revision": "9f37f726f5b1cb8b7499e8d2a05fd3041715ed94",
+			"revisionTime": "2019-12-02T14:00:45Z"
 		},
 		{
 			"checksumSHA1": "tUybPhSS6kQxGMa6rmzF11EcnkE=",

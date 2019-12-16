@@ -2,6 +2,12 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
+	"github.com/metegol-project/controllers"
+	"github.com/metegol-project/models"
+	"github.com/metegol-project/services"
+
 	"net/http"
 )
 
@@ -43,6 +49,13 @@ import (
 //}
 
 func main() {
+	db, err := gorm.Open("mysql", "root:root@(localhost:3306)/metegol_db?parseTime=true")
+	if err != nil {
+		panic(err)
+	}
+
+	db.AutoMigrate(&models.Match{})
+
 	r := gin.Default()
 
 	r.GET("/", func(ctx *gin.Context) {
@@ -51,13 +64,17 @@ func main() {
 		})
 	})
 
-	controller := Controller{
-		Service{},
+	controller := controllers.Controller{
+		Service: services.Service{
+			Db: db,
+		},
 	}
 
 	r.POST("/metegol/users", controller.AddUsers)
 	r.GET("/metegol/users", controller.GetUsers)
 	r.GET("/metegol/matches", controller.GetMatches)
+	r.PUT("/metegol/matches", controller.PlayMatch)
+	r.GET("/metegol/scores", controller.GetScores)
 
 	if err := r.Run(); err != nil {
 		panic(err)
