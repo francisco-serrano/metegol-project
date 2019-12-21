@@ -10,9 +10,11 @@ type Match struct {
 	VisitorB     string
 	ScoreLocal   int
 	ScoreVisitor int
+	Tournament   string
 }
 
 type User struct {
+	gorm.Model
 	Name       string
 	Tournament string
 }
