@@ -11,44 +11,27 @@ import (
 	"net/http"
 )
 
-//func amountMatches(numberPlayers int) int {
-//	return int(0.5 * float32(numberPlayers) * (float32(numberPlayers) - 1))
-//}
-//
-//func amountTeams(numberPlayers int) int {
-//	return combinatorial(numberPlayers, 2)
-//}
-//
-//func factorial(n int) int {
-//	result := n
-//	for i := n-1; i > 0; i-- {
-//		result *= i
-//	}
-//
-//	return result
-//}
-//
-//func combinatorial(n, k int) int {
-//	numerator := factorial(n)
-//	denominator := factorial(k) * factorial(n - k)
-//
-//	return numerator / denominator
-//}
-//
-//func generateTeams(players []string) []string {
-//	var teams []string
-//	for _, p1 := range players {
-//		for _, p2 := range players {
-//			if p1 != p2 {
-//				teams = append(teams, p1+p2)
-//			}
-//		}
-//	}
-//
-//	return teams
-//}
-
 func main() {
+	/*
+		[] Response Views
+		[] Logging
+		[] Error Handling
+		[] Environment Vars Handling (dev/prod)
+		[] Routes
+		[] Special Business Rules
+		[] Schema Improvement (constraints)
+		[] Authentication
+		[] Atomic Operations
+		[] Health Check
+		[] Process Teardown
+		[] Migrations Handling
+		[] Unit Testing
+		[] Integration Testing
+		[] Docker
+		[] CI
+		[] CD
+	*/
+
 	db, err := gorm.Open("mysql", "root:root@(localhost:3306)/metegol_db?parseTime=true")
 	if err != nil {
 		panic(err)
@@ -68,23 +51,15 @@ func main() {
 		Service: services.NewService(db),
 	}
 
-	r.POST("/metegol/users", controller.AddUsers)
-	r.GET("/metegol/users", controller.GetUsers)
-	r.GET("/metegol/matches", controller.GetMatches)
-	r.PUT("/metegol/matches", controller.PlayMatch)
-	r.GET("/metegol/scores", controller.GetScores)
+	group := r.Group("/metegol")
+	group.POST("/users", controller.AddUsers)
+	group.GET("/users", controller.GetUsers)
+	group.GET("/matches/:tournament", controller.GetMatches)
+	group.PUT("/matches", controller.PlayMatch)
+	group.GET("/scores/:tournament", controller.GetScores)
+	group.DELETE("/data/:tournament", controller.WipeData)
 
 	if err := r.Run(); err != nil {
 		panic(err)
 	}
-
-	//numberPlayers := 4
-	//numberTeams := amountTeams(numberPlayers)
-	//numberMatches := amountMatches(numberTeams)
-	//
-	//fmt.Println("number of players", numberPlayers)
-	//fmt.Println("number of teams", numberTeams)
-	//fmt.Println("number of matches", numberMatches)
-
-	//Run()
 }
