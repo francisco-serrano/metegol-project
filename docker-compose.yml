@@ -1,4 +1,4 @@
-version: '3'
+version: '3.4'
 
 services:
   mysql:
@@ -12,3 +12,31 @@ services:
     volumes:
       - ./mysql:/var/lib/mysql
       - ./init.sql:/data/application/init.sql
+
+  dev:
+    container_name: metegol-project-dev
+    build:
+      context: .
+      target: dev
+    ports:
+      - '8080:8080'
+    environment:
+      DB_USER: root
+      DB_PASS: root
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: metegol_db
+
+  prod:
+    container_name: metegol-project-prod
+    build:
+      context: .
+      target: prod
+    ports:
+      - '8080:8080'
+    environment:
+      DB_USER: root
+      DB_PASS: root
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: metegol_db

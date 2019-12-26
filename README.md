@@ -1,5 +1,10 @@
 # metegol-project
 
+## Instructions
+- To run MySQL: `docker-compose up mysql`
+- To run dev env: `docker-compose run --service-ports dev`
+- To run prod env: `docker-compose run --service-ports prod`
+
 *Checklist*
 - [ ] Special Business Rules
 - [ ] General Refactor
@@ -11,6 +16,5 @@
 - [ ] Migrations Handling
 - [ ] Unit Testing
 - [ ] Integration Testing
-- [ ] Docker
 - [ ] CI
 - [ ] CD
