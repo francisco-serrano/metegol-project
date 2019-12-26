@@ -61,6 +61,12 @@
 			"revisionTime": "2019-11-12T14:47:28Z"
 		},
 		{
+			"checksumSHA1": "Z7rkupTQRAZzzTCqDLiSbNR70to=",
+			"path": "github.com/konsorten/go-windows-terminal-sequences",
+			"revision": "f55edac94c9bbba5d6182a4be46d86a2c9b5b50e",
+			"revisionTime": "2019-02-26T22:47:05Z"
+		},
+		{
 			"checksumSHA1": "nFLN1tyLs+qMmZYck7PR9d9Bikg=",
 			"path": "github.com/mattn/go-isatty",
 			"revision": "31745d66dd679ac0ac4f8d3ecff168fce6170c6a",
@@ -77,6 +83,12 @@
 			"path": "github.com/modern-go/reflect2",
 			"revision": "94122c33edd36123c84d5368cfb2b69df93a0ec8",
 			"revisionTime": "2018-07-18T01:23:57Z"
+		},
+		{
+			"checksumSHA1": "Trcam+FrFjjjzUs7aZXCALI/ZGY=",
+			"path": "github.com/sirupsen/logrus",
+			"revision": "67a7fdcf741f4d5cee82cb9800994ccfd4393ad0",
+			"revisionTime": "2019-10-26T11:39:18Z"
 		},
 		{
 			"checksumSHA1": "IrQRTIA+KTW1CC9oho2sEOtayZU=",

@@ -1,63 +1,101 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"github.com/metegol-project/controllers"
 	"github.com/metegol-project/models"
 	"github.com/metegol-project/services"
-
-	"net/http"
+	"github.com/sirupsen/logrus"
+	"os"
+	"time"
 )
 
-func main() {
-	/*
-		[] Response Views
-		[] Logging
-		[] Error Handling
-		[] Environment Vars Handling (dev/prod)
-		[] Routes
-		[] Special Business Rules
-		[] Schema Improvement (constraints)
-		[] Authentication
-		[] Atomic Operations
-		[] Health Check
-		[] Process Teardown
-		[] Migrations Handling
-		[] Unit Testing
-		[] Integration Testing
-		[] Docker
-		[] CI
-		[] CD
-	*/
+func checkEnvironmentVariables() error {
+	envVars := []string{"DB_USER", "DB_PASS", "DB_HOST", "DB_PORT", "DB_NAME"}
 
-	db, err := gorm.Open("mysql", "root:root@(localhost:3306)/metegol_db?parseTime=true")
+	for _, v := range envVars {
+		if myVar := os.Getenv(v); myVar == "" {
+			return errors.New(fmt.Sprintf("%s not provided", v))
+		}
+	}
+
+	return nil
+}
+
+func InitializeDatabase() (*gorm.DB, error) {
+	user := os.Getenv("DB_USER")
+	password := os.Getenv("DB_PASS")
+	host := os.Getenv("DB_HOST")
+	port := os.Getenv("DB_PORT")
+	dbName := os.Getenv("DB_NAME")
+
+	dbConnection := fmt.Sprintf("%s:%s@(%s:%s)/%s?parseTime=true", user, password, host, port, dbName)
+
+	db, err := gorm.Open("mysql", dbConnection)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	db.AutoMigrate(&models.Match{}, &models.User{})
 
-	r := gin.Default()
+	db.DB().SetMaxIdleConns(10)
+	db.DB().SetMaxOpenConns(100)
+	db.DB().SetConnMaxLifetime(time.Hour)
 
-	r.GET("/", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{
-			"message": "hello world",
-		})
-	})
+	return db, nil
+}
 
-	controller := controllers.Controller{
-		Service: services.NewService(db),
+func InitializeLogger() *logrus.Logger {
+	logger := logrus.New()
+	logger.Out = os.Stdout
+	logger.Level = logrus.DebugLevel
+	logger.Formatter = &logrus.JSONFormatter{}
+
+	return logger
+}
+
+func InitializeRoutes(engine *gin.Engine, db *gorm.DB, logger *logrus.Logger) error {
+	service, err := services.NewService(db, logger)
+	if err != nil {
+		return err
 	}
 
-	group := r.Group("/metegol")
+	controller := controllers.Controller{
+		Service: service,
+	}
+
+	group := engine.Group("/metegol")
 	group.POST("/users", controller.AddUsers)
 	group.GET("/users", controller.GetUsers)
 	group.GET("/matches/:tournament", controller.GetMatches)
 	group.PUT("/matches", controller.PlayMatch)
 	group.GET("/scores/:tournament", controller.GetScores)
 	group.DELETE("/data/:tournament", controller.WipeData)
+
+	return nil
+}
+
+func main() {
+	if err := checkEnvironmentVariables(); err != nil {
+		panic(err)
+	}
+
+	db, err := InitializeDatabase()
+	if err != nil {
+		panic(err)
+	}
+
+	logger := InitializeLogger()
+
+	r := gin.Default()
+
+	if err := InitializeRoutes(r, db, logger); err != nil {
+		panic(err)
+	}
 
 	if err := r.Run(); err != nil {
 		panic(err)
